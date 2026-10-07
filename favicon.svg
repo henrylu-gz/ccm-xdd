@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 聪聪明和小叮当 · 站点图标：一朵油菜花 -->
+  <rect width="64" height="64" rx="15" fill="#FFF9F0"/>
+  <g fill="#F5B942">
+    <circle cx="32" cy="18" r="9.5"/>
+    <circle cx="46" cy="32" r="9.5"/>
+    <circle cx="32" cy="46" r="9.5"/>
+    <circle cx="18" cy="32" r="9.5"/>
+  </g>
+  <circle cx="32" cy="32" r="9" fill="#4A3B32"/>
+  <circle cx="32" cy="32" r="3.6" fill="#FFF9F0"/>
+</svg>
