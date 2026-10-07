@@ -1,0 +1,7 @@
+# 聪聪明和小叮当 —— 爬虫说明
+# 站点：https://henrylu-gz.github.io/ccm-xdd
+
+User-agent: *
+Allow: /
+
+Sitemap: https://henrylu-gz.github.io/ccm-xdd/sitemap.xml
