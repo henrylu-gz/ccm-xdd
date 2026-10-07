@@ -515,7 +515,15 @@ img,svg{ display:block; max-width:100%; }
   text-align:center;
   transition:transform .18s cubic-bezier(.2,.7,.3,1);
 }
-.bank__art{ position:relative; }
+/* 整个猪猪都能点：加手型光标和轻微放大反馈 */
+.bank__art{
+  position:relative;
+  cursor:pointer;
+  transition:transform .2s cubic-bezier(.2,.7,.3,1);
+}
+.bank__art:hover{ transform:scale(1.015); }
+.bank__art:active{ transform:scale(.99); }
+.bank__art svg{ pointer-events:auto; }
 .bank__origin{
   position:absolute;
   left:50%;

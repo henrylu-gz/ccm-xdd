@@ -9,9 +9,10 @@
   'use strict';
 
   var START = 20;          // 起始进度（图纸要求写 20%）
-  var COUNTED = 5;         // 记作「已存 5 枚」，凑满之后不再加
+  var COUNTED = 20;        // 起始就记作「已存 20 枚」
   var bankBtn = document.getElementById('bankBtn');
   var bank = document.getElementById('bank');
+  var bankArt = document.getElementById('bankArt');
   var originEl = document.getElementById('coinOrigin');
   var pctText = document.getElementById('pctText');
   var pctInline = document.getElementById('pctInline');
@@ -25,21 +26,26 @@
   var count = COUNTED;
   var soundOn = true;
   var busy = false;
+  var tipIndex = 0;        // 文案顺序走，不随机
 
+  /* 鼓励文案：顺序固定，点一次往下一条，到末尾回到第一条 */
   var TIPS = [
     '叮！存进去一枚',
-    '又赚到一点钱钱',
-    '攒钱钱，慢慢来',
     '这一枚是给小叮当的',
-    '钱钱 +1',
-    '存钱罐有点沉了',
-    '努力就有回响'
+    '这一枚是给聪聪明的',
+    '炒股票赚了好多钱钱！',
+    '发工资赚了钱钱',
+    '地上捡了钱钱',
+    '梦到了好多钱钱'
   ];
 
   /* ============ 一、金币声（Web Audio 合成金属撞击） ============
-     构成：两个高频正弦做「叮」的基音（带轻微失谐产生金属拍频），
-     一个短的噪声脉冲做撞击的「脆」，再挂一个带通把噪声雕成金属味。
-     最后让滤波器频率下滑，模拟硬币在罐里回弹。 */
+     「清脆」的做法：
+       1. 基音抬高到 3.5k~7.6k（原来 2.3k 偏闷）
+       2. 衰减收短（0.42s → 0.26s），尾巴短才显得利落
+       3. 撞击噪声的高频比重加大、截止频率抬高
+       4. 低频「咚」几乎去掉（它负责闷，清脆就不需要）
+     三个高频正弦带轻微失谐，产生金属特有的拍频。 */
   var actx = null;
 
   function audio() {
@@ -72,11 +78,12 @@
     out.gain.value = (gainScale === undefined ? 1 : gainScale);
     out.connect(ctx.destination);
 
-    // 两个基音（金属的双音特征）
+    // 高频基音（金属的「叮」，四个泛音抬高到 3.5k~7.6k，尾巴收短）
     var partials = [
-      { f: 2350, g: 0.16, dur: 0.42 },
-      { f: 3480, g: 0.10, dur: 0.34 },
-      { f: 5120, g: 0.05, dur: 0.22 }
+      { f: 3520, g: 0.17, dur: 0.26 },
+      { f: 5240, g: 0.11, dur: 0.21 },
+      { f: 6900, g: 0.07, dur: 0.16 },
+      { f: 8600, g: 0.04, dur: 0.11 }
     ];
     partials.forEach(function (p) {
       var osc = ctx.createOscillator();
@@ -84,36 +91,39 @@
       osc.type = 'sine';
       osc.frequency.value = p.f * (detune ? 1 + detune : 1);
       g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(p.g, t + 0.004);
+      g.gain.linearRampToValueAtTime(p.g, t + 0.002);      // 起音更快 = 更脆
       g.gain.exponentialRampToValueAtTime(0.0001, t + p.dur);
       osc.connect(g); g.connect(out);
       osc.start(t); osc.stop(t + p.dur + 0.02);
     });
 
-    // 撞击噪声（带通塑形成金属质感）
+    // 撞击噪声：高频比重更大、截止更高，做出「锃」的一下
     var src = ctx.createBufferSource();
-    src.buffer = noiseBuffer(ctx, 0.09);
+    src.buffer = noiseBuffer(ctx, 0.055);
     var bp = ctx.createBiquadFilter();
     bp.type = 'bandpass';
-    bp.frequency.setValueAtTime(4600, t);
-    bp.frequency.exponentialRampToValueAtTime(1500, t + 0.09);
-    bp.Q.value = 2.2;
+    bp.frequency.setValueAtTime(7200, t);
+    bp.frequency.exponentialRampToValueAtTime(2600, t + 0.055);
+    bp.Q.value = 1.4;
+    var hp = ctx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.value = 2200;                             // 切掉闷的低频噪声
     var ng = ctx.createGain();
-    ng.gain.setValueAtTime(0.55, t);
-    ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
-    src.connect(bp); bp.connect(ng); ng.connect(out);
-    src.start(t); src.stop(t + 0.1);
+    ng.gain.setValueAtTime(0.6, t);
+    ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.055);
+    src.connect(bp); bp.connect(hp); hp.connect(ng); ng.connect(out);
+    src.start(t); src.stop(t + 0.07);
 
-    // 一点低频「咚」，让金币落罐有分量
+    // 极轻的一点低频，只为了让声音不"飘"，量很小（原 0.16 → 0.05）
     var low = ctx.createOscillator();
     var lg = ctx.createGain();
     low.type = 'triangle';
-    low.frequency.setValueAtTime(320, t);
-    low.frequency.exponentialRampToValueAtTime(150, t + 0.14);
-    lg.gain.setValueAtTime(0.16, t);
-    lg.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+    low.frequency.setValueAtTime(520, t);
+    low.frequency.exponentialRampToValueAtTime(260, t + 0.07);
+    lg.gain.setValueAtTime(0.05, t);
+    lg.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
     low.connect(lg); lg.connect(out);
-    low.start(t); low.stop(t + 0.18);
+    low.start(t); low.stop(t + 0.1);
   }
 
   /* ============ 二、金币掉落动画 ============ */
@@ -215,7 +225,13 @@
     render();
 
     if (hint) {
-      hint.textContent = pct >= 100 ? '存满啦！赚钱钱大王' : TIPS[Math.floor(Math.random() * TIPS.length)];
+      if (pct >= 100) {
+        hint.textContent = '存满啦！赚钱钱大王';
+      } else {
+        // 按你编好的顺序往下走，不随机
+        hint.textContent = TIPS[tipIndex % TIPS.length];
+        tipIndex += 1;
+      }
     }
     // 罐子被点一下轻轻晃
     if (bank) {
@@ -225,6 +241,11 @@
     }
   }
 
+  /* 整个猪猪（含罐身、耳朵、腿）都能点，不只是按钮 */
+  if (bankArt) {
+    bankArt.addEventListener('click', store);
+    bankArt.style.cursor = 'pointer';
+  }
   if (bankBtn) {
     bankBtn.addEventListener('click', store);
     bankBtn.addEventListener('keydown', function (e) {

@@ -75,9 +75,10 @@
         <p class="stage__name">招财猫</p>
       </div>
 
-      <!-- 中间：存钱罐（可点） -->
+      <!-- 中间：存钱罐（整个罐子都能点，不只是下面的按钮） -->
       <div class="bank" id="bank">
-        <div class="bank__art">
+        <div class="bank__art" id="bankArt" role="button" tabindex="-1"
+             title="点一下，存一枚金币">
           <!-- 金币从这里落下来 -->
           <div class="bank__origin" id="coinOrigin" aria-hidden="true"></div>
 
@@ -136,7 +137,7 @@
 
         <button class="bank__hit" id="bankBtn" type="button"
                 aria-label="点一下，往存钱罐里存一枚金币">
-          <span class="bank__hint">点我存金币</span>
+          <span class="bank__hint">点我 · 或点上面的猪猪</span>
         </button>
       </div>
 
