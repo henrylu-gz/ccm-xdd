@@ -111,7 +111,7 @@
             <g>
               <rect x="86" y="106" width="248" height="36" rx="18" fill="#FFF9F0" stroke="#F5B942" stroke-width="3"/>
               <text x="210" y="131" text-anchor="middle" font-size="20" font-weight="700" fill="#4A3B32"
-                    font-family="'PingFang SC','Microsoft YaHei',sans-serif">赚钱钱进度：<tspan id="pctText">20%</tspan></text>
+                    font-family="'PingFang SC','Microsoft YaHei',sans-serif">赚钱钱进度：<tspan id="pctText">0.00%</tspan></text>
             </g>
 
             <!-- 眼睛 -->
@@ -199,16 +199,15 @@
     <!-- 计数器 -->
     <p class="counter">
       已经存了 <strong id="countText">0</strong> 枚
-      <span class="counter__pct" id="pctInline">20%</span>
+      <span class="counter__pct" id="pctInline">0.00%</span>
     </p>
     <p class="counter__hint" id="soundHint">今天也赚到钱钱了</p>
 
-    <!-- 声音开关 -->
+    <!-- 声音开关（枚数只增不减，所以没有清零按钮） -->
     <div class="soundrow">
       <button class="soundbtn" id="soundBtn" type="button" aria-pressed="true">
         <span id="soundBtnText">金币声：开</span>
       </button>
-      <button class="soundbtn soundbtn--ghost" id="resetBtn" type="button">清零重来</button>
     </div>
 
     <p class="coin__note">

@@ -2,14 +2,16 @@
    赚钱钱 · coin.js
    - 点一下存钱罐：一枚金币落进去 + 金属撞击声
    - 金币声用 Web Audio 现场合成，没有音频文件（断网也能响）
-   - 进度从 20% 起，每存一枚 +1%，到 100% 就满了
+   - 已存枚数记在浏览器本地（localStorage），刷新、关掉再打开都接着数，只增不减
+   - 进度口径：每 10000 枚 = 1%（存满 100% 要 100 万枚），显示保留两位小数
    - 纯原生 JS，无任何外部依赖
    ========================================================= */
 (function () {
   'use strict';
 
-  var START = 20;          // 起始进度（图纸要求写 20%）
-  var COUNTED = 20;        // 起始就记作「已存 20 枚」
+  var STORE_KEY = 'ccm_xdd_coin_total';  // 本地存档的键名
+  var COINS_PER_PCT = 10000;             // 每 10000 枚 = 1%
+  var MAX_COUNT = 1000000;               // 100 万枚 = 100%（封顶）
   var bankBtn = document.getElementById('bankBtn');
   var bank = document.getElementById('bank');
   var bankArt = document.getElementById('bankArt');
@@ -19,11 +21,26 @@
   var countText = document.getElementById('countText');
   var soundBtn = document.getElementById('soundBtn');
   var soundBtnText = document.getElementById('soundBtnText');
-  var resetBtn = document.getElementById('resetBtn');
   var hint = document.getElementById('soundHint');
 
-  var pct = START;
-  var count = COUNTED;
+  /* ---- 已存枚数：从本地存档读回来，读不到就从 0 开始 ---- */
+  var count = loadCount();
+
+  function loadCount() {
+    try {
+      var raw = window.localStorage.getItem(STORE_KEY);
+      var n = parseInt(raw, 10);
+      if (isFinite(n) && n >= 0) return n;      // 存档有效就用存档
+    } catch (e) { /* 隐私模式 / 禁用了本地存储：退回只记本次 */ }
+    return 0;
+  }
+
+  function saveCount() {
+    try {
+      window.localStorage.setItem(STORE_KEY, String(count));
+    } catch (e) { /* 存不进去也不影响这一枚金币掉进罐子 */ }
+  }
+
   var soundOn = true;
   var busy = false;
   var tipIndex = 0;        // 文案顺序走，不随机
@@ -205,10 +222,24 @@
   }
 
   /* ============ 三、进度与文案 ============ */
+  /* 进度 = 枚数 / 10000（%），保留两位小数，最多 100.00% */
+  function pctOf(n) {
+    var p = n / COINS_PER_PCT * 100;
+    if (p > 100) p = 100;
+    return p.toFixed(2) + '%';
+  }
+
+  /* 枚数上千了加个千分位，好读 */
+  function pretty(n) {
+    var s = String(n);
+    return s.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
   function render() {
-    if (pctText) pctText.textContent = pct + '%';
-    if (pctInline) pctInline.textContent = pct + '%';
-    if (countText) countText.textContent = String(count);
+    var p = pctOf(count);
+    if (pctText) pctText.textContent = p;
+    if (pctInline) pctInline.textContent = p;
+    if (countText) countText.textContent = pretty(count);
   }
 
   function store() {
@@ -218,16 +249,12 @@
 
     dropCoin();
 
-    if (pct < 100) {
-      pct += 1;
-      count += 1;
-    } else if (count < 50) {
-      count += 1;                                       // 满了以后只继续数金币
-    }
+    count += 1;                                          // 只增不减，没有清零
+    saveCount();
     render();
 
     if (hint) {
-      if (pct >= 100) {
+      if (count >= MAX_COUNT) {
         hint.textContent = '存满啦！赚钱钱大王';
       } else {
         // 按你编好的顺序往下走，不随机
@@ -261,14 +288,6 @@
       soundBtn.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
       if (soundBtnText) soundBtnText.textContent = '金币声：' + (soundOn ? '开' : '关');
       if (soundOn) clink(0.7);                          // 开启时给一声反馈
-    });
-  }
-
-  if (resetBtn) {
-    resetBtn.addEventListener('click', function () {
-      pct = START; count = COUNTED;
-      render();
-      if (hint) hint.textContent = '清零了，从头再存';
     });
   }
 
