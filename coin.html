@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>赚钱钱 · 聪聪明和小叮当</title>
+<meta name="description" content="点一下存钱罐，叮的一声就存进去一枚金币。左边招财猫，右边财神爷，一起帮合力攒钱钱。">
+<meta name="theme-color" content="#FFF9F0">
+<link rel="canonical" href="https://henrylu-gz.github.io/ccm-xdd/coin.html">
+<meta name="robots" content="noindex">
+
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="coinpage">
+
+  <main class="coin">
+
+    <!-- 顶部返回：对称的另一半在页脚 -->
+    <nav class="pagenav">
+      <a class="pagenav__back" href="index.html">← 回首页</a>
+      <span class="pagenav__label">赚钱钱</span>
+      <span class="pagenav__ghost" aria-hidden="true">← 回首页</span>
+    </nav>
+
+    <h1 class="coin__title">赚钱钱</h1>
+    <p class="coin__lead">点一下存钱罐，就有一枚金币掉进去。</p>
+
+    <!-- 存钱罐舞台：左右两位护法 + 中间存钱罐 -->
+    <div class="stage">
+
+      <!-- 左护法：招财猫 -->
+      <div class="stage__side stage__side--left" aria-hidden="true">
+        <svg class="art art--cat" viewBox="0 0 240 300" role="img" aria-label="手绘招财猫">
+          <ellipse cx="120" cy="282" rx="80" ry="14" fill="#4A3B32" opacity=".09"/>
+          <!-- 高高举起的小手 -->
+          <rect x="56" y="92" width="30" height="80" rx="15" fill="#FFF9F0" stroke="#4A3B32" stroke-width="3"/>
+          <circle cx="71" cy="82" r="19" fill="#FFF9F0" stroke="#4A3B32" stroke-width="3"/>
+          <path d="M63 78 q8 6 16 0" stroke="#4A3B32" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          <path d="M63 88 q8 6 16 0" stroke="#4A3B32" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".5"/>
+          <!-- 耳朵 -->
+          <path d="M58 104 L52 62 L96 84 Z" fill="#FFF9F0" stroke="#4A3B32" stroke-width="3.2" stroke-linejoin="round"/>
+          <path d="M182 104 L188 62 L144 84 Z" fill="#FFF9F0" stroke="#4A3B32" stroke-width="3.2" stroke-linejoin="round"/>
+          <path d="M64 98 L60 72 L86 86 Z" fill="#D9463E" opacity=".8"/>
+          <path d="M176 98 L180 72 L154 86 Z" fill="#D9463E" opacity=".8"/>
+          <!-- 身体 + 头 -->
+          <path d="M48 190 q0 -96 72 -96 q72 0 72 96 q0 78 -72 78 q-72 0 -72 -78 z"
+                fill="#FFF9F0" stroke="#4A3B32" stroke-width="3.4"/>
+          <!-- 闭眼笑 -->
+          <path d="M86 150 q12 -14 24 0" stroke="#3A2C22" stroke-width="3.6" fill="none" stroke-linecap="round"/>
+          <path d="M130 150 q12 -14 24 0" stroke="#3A2C22" stroke-width="3.6" fill="none" stroke-linecap="round"/>
+          <path d="M112 164 q8 6 16 0" stroke="#9C5A48" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <ellipse cx="82" cy="166" rx="11" ry="6.5" fill="#F0A99A" opacity=".6"/>
+          <ellipse cx="158" cy="166" rx="11" ry="6.5" fill="#F0A99A" opacity=".6"/>
+          <g stroke="#4A3B32" stroke-width="2.2" stroke-linecap="round" opacity=".55">
+            <path d="M66 158 l-28 -9"/><path d="M66 170 l-28 7"/>
+            <path d="M174 158 l28 -9"/><path d="M174 170 l28 7"/>
+          </g>
+          <!-- 项圈 + 铃铛 -->
+          <path d="M62 198 q58 26 116 0" fill="none" stroke="#D9463E" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="120" cy="212" r="14" fill="#F5B942" stroke="#4A3B32" stroke-width="2.8"/>
+          <path d="M109 208 h22 M120 199 v26" stroke="#4A3B32" stroke-width="2.2" opacity=".45"/>
+          <!-- 肚子上的金币 -->
+          <circle cx="120" cy="250" r="23" fill="#F5B942" stroke="#E0A32F" stroke-width="3"/>
+          <circle cx="120" cy="250" r="16" fill="none" stroke="#E0A32F" stroke-width="2" opacity=".7"/>
+          <text x="120" y="259" text-anchor="middle" font-size="21" font-weight="700" fill="#4A3B32"
+                font-family="'PingFang SC','Microsoft YaHei',sans-serif">福</text>
+          <!-- 前爪 -->
+          <ellipse cx="86" cy="272" rx="23" ry="14" fill="#FFF9F0" stroke="#4A3B32" stroke-width="3"/>
+          <ellipse cx="154" cy="272" rx="23" ry="14" fill="#FFF9F0" stroke="#4A3B32" stroke-width="3"/>
+        </svg>
+        <p class="stage__name">招财猫</p>
+      </div>
+
+      <!-- 中间：存钱罐（可点） -->
+      <div class="bank" id="bank">
+        <div class="bank__art">
+          <!-- 金币从这里落下来 -->
+          <div class="bank__origin" id="coinOrigin" aria-hidden="true"></div>
+
+          <svg class="art art--piggy" viewBox="0 0 420 340" role="img"
+               aria-label="手绘粉色存钱罐，罐身写着赚钱钱进度，金币从投币口落进去">
+            <ellipse cx="210" cy="316" rx="150" ry="20" fill="#4A3B32" opacity=".1"/>
+
+            <!-- 四条腿 -->
+            <rect x="106" y="258" width="30" height="48" rx="13" fill="#F2A9B4" stroke="#4A3B32" stroke-width="3"/>
+            <rect x="168" y="266" width="30" height="42" rx="13" fill="#F2A9B4" stroke="#4A3B32" stroke-width="3"/>
+            <rect x="232" y="266" width="30" height="42" rx="13" fill="#F2A9B4" stroke="#4A3B32" stroke-width="3"/>
+            <rect x="290" y="258" width="30" height="48" rx="13" fill="#F2A9B4" stroke="#4A3B32" stroke-width="3"/>
+
+            <!-- 尾巴 -->
+            <path d="M348 200 q30 -10 22 -34 q-6 -18 -22 -10" fill="none" stroke="#4A3B32"
+                  stroke-width="8" stroke-linecap="round"/>
+
+            <!-- 耳朵（收短，给标签让出空间） -->
+            <path d="M112 86 l-14 -34 l46 18 z" fill="#F2A9B4" stroke="#4A3B32" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M308 86 l14 -34 l-46 18 z" fill="#F2A9B4" stroke="#4A3B32" stroke-width="3" stroke-linejoin="round"/>
+
+            <!-- 身体 -->
+            <ellipse cx="210" cy="196" rx="152" ry="118" fill="#F2A9B4" stroke="#4A3B32" stroke-width="3.6"/>
+            <ellipse cx="182" cy="150" rx="86" ry="52" fill="#FFF9F0" opacity=".2"/>
+
+            <!-- 投币口 -->
+            <rect x="178" y="86" width="64" height="12" rx="6" fill="#4A3B32"/>
+
+            <!-- 进度标签：紧贴投币口下方，字号收小，完全落在五官上方 -->
+            <g>
+              <rect x="86" y="106" width="248" height="36" rx="18" fill="#FFF9F0" stroke="#F5B942" stroke-width="3"/>
+              <text x="210" y="131" text-anchor="middle" font-size="20" font-weight="700" fill="#4A3B32"
+                    font-family="'PingFang SC','Microsoft YaHei',sans-serif">赚钱钱进度：<tspan id="pctText">20%</tspan></text>
+            </g>
+
+            <!-- 眼睛 -->
+            <g class="piggy__eyes">
+              <circle cx="172" cy="168" r="12.5" fill="#3A2C22"/>
+              <circle cx="248" cy="168" r="12.5" fill="#3A2C22"/>
+              <circle cx="177" cy="163" r="4.4" fill="#FFF9F0"/>
+              <circle cx="253" cy="163" r="4.4" fill="#FFF9F0"/>
+            </g>
+            <ellipse cx="144" cy="196" rx="14" ry="8" fill="#E8788A" opacity=".5"/>
+            <ellipse cx="276" cy="196" rx="14" ry="8" fill="#E8788A" opacity=".5"/>
+
+            <!-- 鼻子 -->
+            <ellipse cx="210" cy="218" rx="30" ry="22" fill="#F27C8D" stroke="#4A3B32" stroke-width="3"/>
+            <ellipse cx="200" cy="212" rx="8" ry="5" fill="#FFF9F0" opacity=".5"/>
+            <circle cx="201" cy="222" r="4" fill="#4A3B32"/>
+            <circle cx="219" cy="222" r="4" fill="#4A3B32"/>
+
+            <!-- 微微笑 -->
+            <path d="M186 252 q24 16 48 0" stroke="#B5566A" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <button class="bank__hit" id="bankBtn" type="button"
+                aria-label="点一下，往存钱罐里存一枚金币">
+          <span class="bank__hint">点我存金币</span>
+        </button>
+      </div>
+
+      <!-- 右护法：财神爷 -->
+      <div class="stage__side stage__side--right" aria-hidden="true">
+        <svg class="art art--god" viewBox="0 0 240 300" role="img" aria-label="手绘财神爷">
+          <ellipse cx="120" cy="284" rx="78" ry="14" fill="#4A3B32" opacity=".09"/>
+
+          <!-- 金元宝（捧在右手） -->
+          <g>
+            <path d="M62 150 q26 -30 52 0 q-11 19 -26 19 q-15 0 -26 -19 z" fill="#F5B942" stroke="#4A3B32" stroke-width="3"/>
+            <ellipse cx="88" cy="148" rx="16" ry="6" fill="#FFF9F0" opacity=".55"/>
+          </g>
+
+          <!-- 双臂 -->
+          <path d="M84 180 q-16 18 -14 36" fill="none" stroke="#E8B23A" stroke-width="24" stroke-linecap="round"/>
+          <path d="M156 180 q16 18 14 36" fill="none" stroke="#E8B23A" stroke-width="24" stroke-linecap="round"/>
+          <circle cx="70" cy="222" r="13" fill="#F2D2B2" stroke="#4A3B32" stroke-width="2.6"/>
+          <circle cx="170" cy="222" r="13" fill="#F2D2B2" stroke="#4A3B32" stroke-width="2.6"/>
+
+          <!-- 官袍 -->
+          <path d="M52 282 q0 -112 68 -112 q68 0 68 112 z" fill="#D9463E" stroke="#4A3B32" stroke-width="3.4"/>
+          <path d="M120 176 v106" stroke="#4A3B32" stroke-width="2.4" opacity=".22"/>
+          <path d="M132 184 q22 6 26 26" fill="none" stroke="#E0A32F" stroke-width="4" opacity=".55"/>
+          <path d="M92 196 q28 16 56 0" fill="none" stroke="#F5B942" stroke-width="9" stroke-linecap="round"/>
+          <circle cx="120" cy="210" r="10" fill="#F5B942" stroke="#4A3B32" stroke-width="2.4"/>
+          <path d="M84 250 h72" stroke="#F5B942" stroke-width="7" stroke-linecap="round" opacity=".9"/>
+          <path d="M96 268 h48" stroke="#F5B942" stroke-width="5" stroke-linecap="round" opacity=".7"/>
+
+          <!-- 脖子与脸 -->
+          <rect x="108" y="150" width="24" height="24" rx="9" fill="#F2D2B2" stroke="#4A3B32" stroke-width="2.6"/>
+          <ellipse cx="120" cy="124" rx="44" ry="42" fill="#F2D2B2" stroke="#4A3B32" stroke-width="3"/>
+
+          <!-- 白胡子：椭圆挂在脸下方，宽而圆，像财神的长须 -->
+          <ellipse cx="120" cy="184" rx="27" ry="42" fill="#FFF9F0" stroke="#4A3B32" stroke-width="2.6"/>
+          <path d="M108 150 q12 7 24 0" fill="none" stroke="#FFF9F0" stroke-width="8" stroke-linecap="round"/>
+          <path d="M120 158 v56" stroke="#4A3B32" stroke-width="1.6" opacity=".18"/>
+
+          <!-- 笑成弯月的眉眼 -->
+          <path d="M92 106 q10 -12 20 0" stroke="#3A2C22" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+          <path d="M128 106 q10 -12 20 0" stroke="#3A2C22" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+          <path d="M88 92 q13 -8 26 -3" stroke="#4A3B32" stroke-width="3" fill="none" stroke-linecap="round" opacity=".65"/>
+          <path d="M126 89 q13 -5 26 3" stroke="#4A3B32" stroke-width="3" fill="none" stroke-linecap="round" opacity=".65"/>
+          <ellipse cx="90" cy="118" rx="10" ry="6" fill="#F0A99A" opacity=".5"/>
+          <ellipse cx="150" cy="118" rx="10" ry="6" fill="#F0A99A" opacity=".5"/>
+
+          <!-- 财神帽：红帽身 + 金帽檐 + 金顶珠 -->
+          <path d="M78 78 q0 -48 42 -48 q42 0 42 48 z" fill="#D9463E" stroke="#4A3B32" stroke-width="3.4" stroke-linejoin="round"/>
+          <path d="M120 30 q-30 4 -38 48 h76 q-8 -44 -38 -48 z" fill="#D9463E" opacity=".55"/>
+          <path d="M78 78 q42 -22 84 0" fill="none" stroke="#F5B942" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+          <rect x="72" y="74" width="96" height="17" rx="8.5" fill="#F5B942" stroke="#4A3B32" stroke-width="2.8"/>
+          <circle cx="120" cy="24" r="10" fill="#F5B942" stroke="#4A3B32" stroke-width="2.8"/>
+        </svg>
+        <p class="stage__name">财神爷</p>
+      </div>
+
+    </div>
+
+    <!-- 计数器 -->
+    <p class="counter">
+      已经存了 <strong id="countText">0</strong> 枚
+      <span class="counter__pct" id="pctInline">20%</span>
+    </p>
+    <p class="counter__hint" id="soundHint">今天也赚到钱钱了</p>
+
+    <!-- 声音开关 -->
+    <div class="soundrow">
+      <button class="soundbtn" id="soundBtn" type="button" aria-pressed="true">
+        <span id="soundBtnText">金币声：开</span>
+      </button>
+      <button class="soundbtn soundbtn--ghost" id="resetBtn" type="button">清零重来</button>
+    </div>
+
+    <p class="coin__note">
+      金币声是现场合成的（Web Audio），没有音频文件 —— 所以断网、双击本地文件也能响。
+    </p>
+
+  </main>
+
+  <script src="coin.js"></script>
+</body>
+</html>
