@@ -1,0 +1,7 @@
+# 上线包目录：这些文件不要当成站点资源上传
+.wrangler
+node_modules
+*.log
+.DS_Store
+wrangler.json
+.assetsignore
