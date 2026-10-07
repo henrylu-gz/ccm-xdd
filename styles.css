@@ -521,6 +521,16 @@ img,svg{ display:block; max-width:100%; }
   cursor:pointer;
   transition:transform .2s cubic-bezier(.2,.7,.3,1);
 }
+/* 长按连发：禁掉手机上的长按菜单和选字，不然按住会弹「复制/保存图片」 */
+.bank__art,
+.bank__hit{
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  user-select:none;
+  touch-action:manipulation;
+}
+/* 按住不放：罐子一直保持轻微放大，表示正在连发 */
+.bank.is-holding{ transform:scale(1.025); }
 .bank__art:hover{ transform:scale(1.015); }
 .bank__art:active{ transform:scale(.99); }
 .bank__art svg{ pointer-events:auto; }

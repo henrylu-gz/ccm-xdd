@@ -1,6 +1,6 @@
 /* =========================================================
    赚钱钱 · coin.js
-   - 点一下存钱罐：一枚金币落进去 + 金属撞击声
+   - 点一下存钱罐：一枚金币落进去 + 金属撞击声；**按住不放就一直往里掉**（松手停）
    - 金币声用 Web Audio 现场合成，没有音频文件（断网也能响）
    - 已存枚数记在浏览器本地（localStorage），刷新、关掉再打开都接着数，只增不减
    - 进度口径：每 10000 枚 = 1%（存满 100% 要 100 万枚），显示保留两位小数
@@ -43,6 +43,10 @@
 
   var soundOn = true;
   var busy = false;
+  var holding = false;     // 手指/鼠标是不是正按着
+  var holdAdded = 0;       // 这次长按一共进了几枚
+  var holdTimer = null;    // 按住 → 开始连发 的延时器
+  var holdTick = null;     // 连发的定时器
   var tipIndex = 0;        // 文案顺序走，不随机
 
   /* 鼓励文案：顺序固定，点一次往下一条，到末尾回到第一条 */
@@ -145,9 +149,12 @@
 
   /* ============ 二、金币掉落动画 ============ */
   var falling = [];
+  var MAX_FALLING = 12;      // 同时最多几枚在飞，超了就只记账不画（长按连发时防卡）
+  var nextGain = 1;          // 下一声的音量（连发时压低，不然太吵）
 
   function dropCoin() {
     if (!bank || !originEl) return;
+    if (falling.length >= MAX_FALLING) return;
     var bankRect = bank.getBoundingClientRect();
     var oRect = originEl.getBoundingClientRect();
 
@@ -205,7 +212,7 @@
         c.landed = true;
         c.el.classList.add('is-landed');
         c.el.style.transform = 'translate(0,0) scale(.5)';
-        if (soundOn) clink(1, (Math.random() - 0.5) * 0.02);
+        if (soundOn) clink(nextGain, (Math.random() - 0.5) * 0.02);
         alive = true;
       } else {
         c.life -= 16;
@@ -245,22 +252,27 @@
     if (countText) countText.textContent = pretty(count);
   }
 
-  function store() {
-    if (busy) return;
-    busy = true;
-    setTimeout(function () { busy = false; }, 90);
+  /* fromHold=true 表示这是长按连发出来的那一枚 */
+  function store(fromHold) {
+    if (busy && !fromHold) return;
+    if (!fromHold) {
+      busy = true;
+      setTimeout(function () { busy = false; }, 90);
+    }
 
+    nextGain = holding ? 0.5 : 1;                        // 连发时每声轻一点，不然太吵
     dropCoin();
 
     count += 1;                                          // 只增不减，没有清零
+    if (holding) holdAdded += 1;
     saveCount();
     render();
 
     if (hint) {
       if (count >= MAX_COUNT) {
         hint.textContent = '存满啦！赚钱钱大王';
-      } else {
-        // 按你编好的顺序往下走，不随机
+      } else if (!fromHold || holdAdded <= 1) {
+        // 单击、或长按的第一枚才换文案；连发时不换，免得闪成一团
         hint.textContent = TIPS[tipIndex % TIPS.length];
         tipIndex += 1;
       }
@@ -273,15 +285,72 @@
     }
   }
 
-  /* 整个猪猪（含罐身、耳朵、腿）都能点，不只是按钮 */
-  if (bankArt) {
-    bankArt.addEventListener('click', store);
-    bankArt.style.cursor = 'pointer';
+  /* ============ 四、长按连发 ============
+     按下 → 立刻进一枚（跟单击一样有反馈）
+     按住超过 HOLD_DELAY → 每 HOLD_INTERVAL 毫秒自动进一枚，松手才停 */
+  var HOLD_DELAY = 320;      // 按住多久开始连发
+  var HOLD_INTERVAL = 120;   // 连发间隔（约每秒 8 枚）
+
+  function startHold() {
+    stopHold();
+    holding = true;
+    holdAdded = 0;
+    if (bank) bank.classList.add('is-holding');
+    store(false);                                        // 按下先来一枚
+    holdTimer = setTimeout(function () {
+      holdTimer = null;
+      holdTick = setInterval(function () { store(true); }, HOLD_INTERVAL);
+    }, HOLD_DELAY);
   }
+
+  function stopHold() {
+    if (!holding) return;
+    holding = false;
+    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+    if (holdTick) { clearInterval(holdTick); holdTick = null; }
+    if (bank) bank.classList.remove('is-holding');
+    if (holdAdded >= 2 && hint && count < MAX_COUNT) {
+      hint.textContent = '一口气存了 ' + holdAdded + ' 枚！';
+    }
+    holdAdded = 0;
+  }
+
+  /* 整个猪猪（含罐身、耳朵、腿）和下面的按钮，都能点、都能长按 */
+  var holdTargets = [];
+  if (bankArt) { holdTargets.push(bankArt); bankArt.style.cursor = 'pointer'; }
+  if (bankBtn) holdTargets.push(bankBtn);
+
+  holdTargets.forEach(function (el) {
+    // 手机上长按别弹出「复制/保存图片」那套菜单
+    el.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+    if (window.PointerEvent) {
+      el.addEventListener('pointerdown', function (e) {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        e.preventDefault();
+        startHold();
+      });
+      el.addEventListener('pointerup', stopHold);
+      el.addEventListener('pointercancel', stopHold);
+      el.addEventListener('pointerleave', stopHold);
+    } else {                                             // 老浏览器兜底
+      el.addEventListener('mousedown', function (e) { e.preventDefault(); startHold(); });
+      el.addEventListener('mouseup', stopHold);
+      el.addEventListener('mouseleave', stopHold);
+      el.addEventListener('touchstart', function (e) { e.preventDefault(); startHold(); }, { passive: false });
+      el.addEventListener('touchend', stopHold);
+      el.addEventListener('touchcancel', stopHold);
+    }
+  });
+
+  // 手指滑走 / 切到别的 App：停下来，别在后台偷偷加
+  window.addEventListener('blur', stopHold);
+  document.addEventListener('visibilitychange', stopHold);
+
+  /* 键盘：空格 / 回车照样能存（按住空格靠系统自带的重复触发连发） */
   if (bankBtn) {
-    bankBtn.addEventListener('click', store);
     bankBtn.addEventListener('keydown', function (e) {
-      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); store(); }
+      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); store(false); }
     });
   }
 

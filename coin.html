@@ -27,7 +27,7 @@
     </nav>
 
     <h1 class="coin__title">赚钱钱</h1>
-    <p class="coin__lead">点一下存钱罐，就有一枚金币掉进去。</p>
+    <p class="coin__lead">点一下存一枚金币；<strong>按住不放，金币就一直往里掉</strong>，松手才停。</p>
 
     <!-- 存钱罐舞台：左右两位护法 + 中间存钱罐 -->
     <div class="stage">
@@ -77,8 +77,8 @@
 
       <!-- 中间：存钱罐（整个罐子都能点，不只是下面的按钮） -->
       <div class="bank" id="bank">
-        <div class="bank__art" id="bankArt" role="button" tabindex="-1"
-             title="点一下，存一枚金币">
+      <div class="bank__art" id="bankArt" role="button" tabindex="-1"
+           title="点一下存一枚；按住不放一直存">
           <!-- 金币从这里落下来 -->
           <div class="bank__origin" id="coinOrigin" aria-hidden="true"></div>
 
@@ -136,8 +136,8 @@
         </div>
 
         <button class="bank__hit" id="bankBtn" type="button"
-                aria-label="点一下，往存钱罐里存一枚金币">
-          <span class="bank__hint">点我 · 或点上面的猪猪</span>
+                aria-label="点一下存一枚金币；按住不放可以一直存，松手停止">
+          <span class="bank__hint">点一下存一枚 · 按住一直存</span>
         </button>
       </div>
 
