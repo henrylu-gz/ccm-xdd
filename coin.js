@@ -137,7 +137,9 @@
     var size = Math.max(24, Math.min(46, bankRect.width * 0.11));
     var fromX = oRect.left + oRect.width / 2 - size / 2;
     var fromY = oRect.top + oRect.height / 2 - size / 2;
-    var landY = bankRect.top + bankRect.height * 0.30;   // 落到投币口位置
+    /* 投币口在 SVG viewBox(420x340) 里位于 y=86~98，取中点 92 => 约 27% 高度处。
+       之前按 30% 落点，金币会压在进度标签上，这里按实际投币口位置重算。 */
+    var landY = bankRect.top + bankRect.height * 0.27;
     var toY = landY - size / 2;
     var dist = Math.max(40, toY - fromY);
 
